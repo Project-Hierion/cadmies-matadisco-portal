@@ -1,3 +1,17 @@
+/**
+ * CADMIES-Matadisco Portal — Frontend Application
+ *
+ * This module handles the user interface for searching and displaying
+ * CADMIES concept records from the Matadisco network.
+ *
+ * Functions:
+ *   searchConcepts(query)  - Queries the API for concepts matching a search term.
+ *   loadStats()            - Fetches and displays the total number of indexed concepts.
+ *
+ * Dependencies:
+ *   None (vanilla JavaScript)
+ */
+
 const API_BASE = 'http://localhost:5000';
 
 const searchInput = document.getElementById('search-input');
@@ -5,7 +19,7 @@ const searchBtn = document.getElementById('search-btn');
 const resultsDiv = document.getElementById('results');
 const statsDiv = document.getElementById('stats');
 
-// Load stats on page load
+// Load statistics on initial page load
 loadStats();
 
 searchBtn.addEventListener('click', () => {
@@ -21,6 +35,14 @@ searchInput.addEventListener('keydown', (e) => {
     }
 });
 
+/**
+ * Search for concepts matching a query string.
+ *
+ * Sends a GET request to the /search endpoint and renders the results
+ * as a list of concept cards in the results section.
+ *
+ * @param {string} query - The search term to query the API with.
+ */
 async function searchConcepts(query) {
     resultsDiv.innerHTML = '<p>Searching...</p>';
 
@@ -57,6 +79,12 @@ async function searchConcepts(query) {
     }
 }
 
+/**
+ * Load and display statistics about the index.
+ *
+ * Fetches the total concept count from the /stats endpoint and updates
+ * the stats section of the page.
+ */
 async function loadStats() {
     try {
         const response = await fetch(`${API_BASE}/stats`);
