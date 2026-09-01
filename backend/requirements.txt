@@ -1,3 +1,5 @@
 atproto
 requests
 python-dotenv
+Flask
+Flask-CORS
