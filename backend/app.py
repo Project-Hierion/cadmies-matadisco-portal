@@ -1,13 +1,27 @@
 #!/usr/bin/env python3
 """
 CADMIES-Matadisco Portal — API Server
-Serves search results, record details, and stats from the SQLite database.
+
+This module provides a RESTful API for searching and retrieving CADMIES
+concept records from the SQLite database. It serves the frontend with
+data for display, search, and statistics.
+
+Endpoints:
+    /           - Returns service metadata.
+    /search     - Full-text search across concept names and definitions.
+    /record/<uri> - Retrieves a single record by its AT URI.
+    /stats      - Returns total count of indexed concepts.
+
+Environment variables:
+    PORTAL_PORT: Port to run the server on (default: 5000).
+    PORTAL_DEBUG: Enable debug mode (default: false).
 """
 
 import os
 import json
 import sqlite3
 from pathlib import Path
+
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from dotenv import load_dotenv
@@ -23,6 +37,12 @@ DEBUG = os.getenv("PORTAL_DEBUG", "false").lower() == "true"
 
 
 def get_db():
+    """
+    Establish a connection to the SQLite database.
+
+    Returns:
+        sqlite3.Connection: A connection object with row_factory set to sqlite3.Row.
+    """
     conn = sqlite3.connect(DB_PATH)
     conn.row_factory = sqlite3.Row
     return conn
@@ -30,11 +50,32 @@ def get_db():
 
 @app.route("/")
 def home():
-    return jsonify({"name": "CADMIES-Matadisco Portal", "status": "running"})
+    """
+    GET /
+    Returns basic metadata about the API service.
+    """
+    return jsonify({
+        "name": "CADMIES-Matadisco Portal",
+        "status": "running",
+        "version": "0.1.0",
+        "endpoints": ["/search", "/record/<uri>", "/stats"]
+    })
 
 
 @app.route("/search")
 def search():
+    """
+    GET /search
+    Performs a full-text search on concept names and definitions.
+
+    Query parameters:
+        q (str): Search query.
+        limit (int): Max results to return (default: 20).
+        offset (int): Pagination offset (default: 0).
+
+    Returns:
+        JSON list of matching concept records.
+    """
     q = request.args.get("q", "")
     limit = int(request.args.get("limit", 20))
     offset = int(request.args.get("offset", 0))
@@ -60,6 +101,17 @@ def search():
 
 @app.route("/record/<uri>")
 def get_record(uri):
+    """
+    GET /record/<uri>
+    Retrieves a complete concept record by its AT URI.
+
+    Path parameters:
+        uri (str): The AT URI of the concept record.
+
+    Returns:
+        JSON object with all fields for the matching record.
+        Returns 404 if the record is not found.
+    """
     conn = get_db()
     cursor = conn.cursor()
 
@@ -75,6 +127,13 @@ def get_record(uri):
 
 @app.route("/stats")
 def stats():
+    """
+    GET /stats
+    Returns the total number of indexed concepts.
+
+    Returns:
+        JSON object with 'total_concepts' key.
+    """
     conn = get_db()
     cursor = conn.cursor()
 
