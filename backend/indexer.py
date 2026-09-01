@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Matadisco-CADMIES Portal — Indexer
+CADMIES-Matadisco Portal — Indexer
 Queries the PDS for CADMIES records and stores them in SQLite.
 """
 
