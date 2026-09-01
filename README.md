@@ -1,4 +1,4 @@
-# matadisco-cadmies-portal
+# cadmies-matadisco-portal
 
 Dedicated viewer and indexer for CADMIES concepts on the Matadisco network.
 
